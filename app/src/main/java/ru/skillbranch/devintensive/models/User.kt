@@ -43,9 +43,32 @@ data class User(
         isOnline: $isOnline
     """.trimIndent()
     )
+class Builder{
+    private var id: String = "-1"
+    private var firstName: String? = null
+    private var lastName: String? = null
+    private var avatar: String? = null
+    private var rating: Int = 0
+    private var respect: Int = 0
+    private var lastVisit: Date? = null
+    private var isOnline: Boolean = false
 
+    fun id(id:String) = apply {
+        if (id.isEmpty()){
+            id.toInt()
+        }
+        this.id = id }
+    fun firstName(firstName:String) = apply { this.firstName = firstName }
+    fun lastName(lastName:String) = apply { this.lastName = lastName }
+    fun avatar(avatar:String) = apply { this.avatar = avatar }
+    fun rating(rating:Int) = apply { this.rating = rating }
+    fun respect(respect:Int) = apply { this.respect = respect }
+    fun lastVisit(lastVisit:Date) = apply { this.lastVisit = lastVisit }
+    fun isOnline(isOnline:Boolean) = apply { this.isOnline = isOnline }
+    fun build() = User(id = id, firstName = firstName, lastName = lastName,avatar = avatar,rating = rating,respect = respect,lastVisit = lastVisit,isOnline = isOnline)
+}
     companion object Factory {
-        private var lastId = -1
+        var lastId = -1
         fun makeUser(fullName: String?): User {
             lastId++
 
