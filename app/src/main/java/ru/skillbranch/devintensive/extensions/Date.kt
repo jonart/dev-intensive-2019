@@ -65,7 +65,7 @@ fun Date.humanizeDiff(date: Date = Date()): String {
             }
             differenceSeconds in 1..45 -> return "несколько секунд назад"
 
-            differenceSeconds in 45..74 -> return "минуту назад"
+            differenceSeconds in 45..75 -> return "минуту назад"
 
             toMinutes(differenceSeconds) < 45  -> return getQuantityText(
                 number =  toMinutes(differenceSeconds),
