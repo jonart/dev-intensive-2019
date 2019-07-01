@@ -26,152 +26,88 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
     this.time = time
     return this
 }
-
 fun Date.humanizeDiff(date: Date = Date()): String {
     var differenceSeconds: Int = ((Date().time - this.time) / 1000).toInt()
 
-    return when{
-        differenceSeconds >= 0 ->{
-            when {
-                differenceSeconds < 60 -> {
-                    when (differenceSeconds) {
-                        0, 2 -> "только что"
-                        in 2..45 -> "несколько секунд назад"
-                        else -> "минуту назад"
-                    }
-                }
-                (differenceSeconds / 60) < 60 -> {
-                    when (val minutes = (differenceSeconds / 60)) {
-                        1, 21, 31, 41, 51 -> "$minutes минута назад"
-                        2, 3, 4, 22, 23, 24, 32, 33, 34, 42, 43, 44, 52, 53, 54 -> "$minutes минуты назад"
-                        else -> "$minutes минут назад"
-                    }
-                }
-                (differenceSeconds / 3600) < 24 -> {
-                    when (val hour = (differenceSeconds / 3600)) {
-                        1, 21 -> "$hour час назад"
-                        2, 3, 4, 22, 23 -> "$hour часа назад"
-                        else -> "$hour часов назад"
-                    }
-                }
-                (differenceSeconds / 86400) < 364 -> {
-                    when (val days = (differenceSeconds / 86400)) {
-                        1, 21, 31, 41, 51, 61, 71, 81, 91, 101, 121, 131, 141, 151, 161, 171, 181, 191, 201, 221, 231, 241, 251, 261, 271, 281, 291, 301, 321, 331, 341, 351, 361 -> "$days день назад"
-                        2, 3, 4,
-                        22, 23, 24,
-                        32, 33, 34,
-                        42, 43, 44,
-                        52, 53, 54,
-                        62, 63, 64,
-                        72, 73, 74,
-                        82, 83, 84,
-                        92, 93, 94,
-                        102, 103, 104,
-                        122, 123, 124,
-                        132, 133, 134,
-                        142, 143, 144,
-                        152, 153, 154,
-                        162, 163, 164,
-                        172, 173, 174,
-                        182, 183, 184,
-                        192, 193, 194,
-                        202, 203, 204,
-                        222, 223, 224,
-                        232, 233, 234,
-                        242, 243, 244,
-                        252, 253, 254,
-                        262, 263, 264,
-                        272, 273, 274,
-                        282, 283, 284,
-                        292, 293, 294,
-                        302, 303, 304,
-                        322, 323, 324,
-                        332, 333, 334,
-                        342, 343, 344,
-                        352, 353, 354,
-                        362, 363, 364
-                        -> "$days дня назад"
-                        else -> "более года назад"
-                    }
-                }
-                else -> {
-                    (differenceSeconds / 86400).toString() + " дней назад"
-                }
-            }
-        }
-        else -> {
-            differenceSeconds = (-differenceSeconds) +1
-            when {
-                differenceSeconds < 60 -> {
-                    when (differenceSeconds) {
-                        0, 2 -> "только что"
-                        in 2..45 -> "через несколько секунд"
-                        else -> "через минуту"
-                    }
-                }
-                (differenceSeconds / 60) < 60 -> {
-                    when (val minutes = (differenceSeconds / 60)) {
-                        1, 21, 31, 41, 51 -> "через  $minutes минут"
-                        2, 3, 4, 22, 23, 24, 32, 33, 34, 42, 43, 44, 52, 53, 54 -> "через  $minutes минуты"
-                        else -> "через $minutes минут"
-                    }
-                }
-                (differenceSeconds / 3600) < 24 -> {
-                    when (val hour = (differenceSeconds / 3600)) {
-                        1, 21 -> "через $hour час"
-                        2, 3, 4, 22, 23 -> "через $hour часа"
-                        else -> "через $hour часов"
-                    }
-                }
-                (differenceSeconds / 86400) < 364 -> {
-                    when (val days = (differenceSeconds / 86400)) {
-                        1, 21, 31, 41, 51, 61, 71, 81, 91, 101, 121, 131, 141, 151, 161, 171, 181, 191, 201, 221, 231, 241, 251, 261, 271, 281, 291, 301, 321, 331, 341, 351, 361 -> "через $days день"
-                        2, 3, 4,
-                        22, 23, 24,
-                        32, 33, 34,
-                        42, 43, 44,
-                        52, 53, 54,
-                        62, 63, 64,
-                        72, 73, 74,
-                        82, 83, 84,
-                        92, 93, 94,
-                        102, 103, 104,
-                        122, 123, 124,
-                        132, 133, 134,
-                        142, 143, 144,
-                        152, 153, 154,
-                        162, 163, 164,
-                        172, 173, 174,
-                        182, 183, 184,
-                        192, 193, 194,
-                        202, 203, 204,
-                        222, 223, 224,
-                        232, 233, 234,
-                        242, 243, 244,
-                        252, 253, 254,
-                        262, 263, 264,
-                        272, 273, 274,
-                        282, 283, 284,
-                        292, 293, 294,
-                        302, 303, 304,
-                        322, 323, 324,
-                        332, 333, 334,
-                        342, 343, 344,
-                        352, 353, 354,
-                        362, 363, 364
-                        -> "через $days дня"
-                        else -> "более чем через год"
-                    }
-                }
-                else -> {
-                    "более чем через год"
-                }
-            }
+    if(differenceSeconds < 0){
+        differenceSeconds = (-differenceSeconds) +1
+        when{
+            differenceSeconds < 60  -> return getQuantityText(
+                number = differenceSeconds,
+                oneFormat = "через %d секунду",
+                fewFormat = "через %d секунды",
+                manyFormat = "через %d секунд"
+            )
+            toMinutes(differenceSeconds) < 60  -> return getQuantityText(
+                number =  toMinutes(differenceSeconds),
+                oneFormat = "через %d минуту",
+                fewFormat = "через %d минуты",
+                manyFormat = "через %d минут"
+            )
+            toHours(differenceSeconds) < 24  -> return getQuantityText(
+                number = toHours(differenceSeconds),
+                oneFormat = "через %d час",
+                fewFormat = "через %d часа",
+                manyFormat = "через %d часов"
+            )
+            else ->
+                return getQuantityText(
+                    number = toDays(differenceSeconds),
+                    oneFormat = "через %d день",
+                    fewFormat = "через %d дня",
+                    manyFormat = "через %d дней")
         }
     }
+    else{
+        when{
+            differenceSeconds == 0 || differenceSeconds == 1 -> {
+                return "только что"
+            }
+            differenceSeconds in 1..45 -> return "несколько секунд назад"
 
+            differenceSeconds in 45..74 -> return "минуту назад"
+
+            toMinutes(differenceSeconds) < 45  -> return getQuantityText(
+                number =  toMinutes(differenceSeconds),
+                oneFormat = "%d минуту назад",
+                fewFormat = "%d минуты назад",
+                manyFormat = "%d минут назад"
+            )
+
+            toMinutes(differenceSeconds) in 45..75 -> return "час назад"
+
+            toHours(differenceSeconds) < 22  -> return getQuantityText(
+                number = toHours(differenceSeconds),
+                oneFormat = "%d час назад",
+                fewFormat = "%d часа назад",
+                manyFormat = "%d часов назад"
+            )
+
+            toHours(differenceSeconds) in 22..26 -> return "день назад"
+            toHours(differenceSeconds) > 26 && toDays(differenceSeconds) < 360 -> return getQuantityText(
+                number = toDays(differenceSeconds),
+                oneFormat = "%d день назад",
+                fewFormat = "%d дня назад",
+                manyFormat = "%d дней назад")
+
+            else ->
+                return "более года назад"
+        }
+    }
 }
 
+private fun toDays(differenceSeconds: Int) = differenceSeconds / 86400
+private fun toHours(differenceSeconds: Int) = differenceSeconds / 3600
+private fun toMinutes(differenceSeconds: Int) = differenceSeconds / 60
+
+fun getQuantityText(number: Int, oneFormat: String, fewFormat: String, manyFormat: String):String {
+    return when{
+        number % 100 in 11..19 -> manyFormat.format(number)
+        number % 10 == 1 -> oneFormat.format(number)
+        number % 10 in 2..4 -> fewFormat.format(number)
+        else -> manyFormat.format(number)
+    }
+}
 
 enum class TimeUnits {
     SECOND,
