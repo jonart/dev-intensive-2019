@@ -2,6 +2,7 @@ package ru.skillbranch.devintensive.extensions
 
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 const val SECOND = 1000L
 const val MINUTE = 60 * SECOND
@@ -28,9 +29,12 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
 }
 fun Date.humanizeDiff(date: Date = Date()): String {
     var differenceSeconds: Int = ((Date().time - this.time) / 1000).toInt()
+    val isFuture:Boolean
 
-    if(differenceSeconds < 0){
-        differenceSeconds = (-differenceSeconds) +1
+    isFuture = differenceSeconds <= 0
+    differenceSeconds = abs(differenceSeconds)
+
+    if(isFuture){
         when{
             differenceSeconds < 60  -> return getQuantityText(
                 number = differenceSeconds,
