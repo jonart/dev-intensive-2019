@@ -3,7 +3,7 @@ package ru.skillbranch.devintensive.utils
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
         return if (fullName.isNullOrBlank()) {
-            "" to ""
+            "null" to "null"
         } else {
             val parts: List<String>? = fullName.split(" ")
 
@@ -48,7 +48,7 @@ object Utils {
         } else if (name.isNullOrEmpty() && !surname.isNullOrEmpty()) {
             surname[0].toUpperCase().toString()
         } else if (name == "" || surname == "") {
-            "null null"
+            "null"
         } else {
             "null"
         }

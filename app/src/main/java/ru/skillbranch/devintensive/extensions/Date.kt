@@ -31,7 +31,7 @@ fun Date.humanizeDiff(date: Date = Date()): String {
     var differenceSeconds: Int = ((Date().time - this.time) / 1000).toInt()
     val isFuture:Boolean
 
-    isFuture = differenceSeconds <= 0
+    isFuture = differenceSeconds < 0
     differenceSeconds = abs(differenceSeconds)
 
     if(isFuture){
