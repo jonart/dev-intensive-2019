@@ -75,7 +75,7 @@ enum class TimeUnits {
 
     fun plural(value:Int):String {
         return when{
-            TimeUnits.SECOND == this -> {
+            SECOND == this -> {
                 when{
                     value % 100 in 11..19 -> "$value секунд".format(value)
                     value % 10 == 1 -> "$value секунду".format(value)
@@ -83,7 +83,7 @@ enum class TimeUnits {
                     else -> "$value секунд".format(value)
                 }
             }
-            TimeUnits.MINUTE == this -> {
+            MINUTE == this -> {
                 when{
                     value % 100 in 11..19 -> "$value минут".format(value)
                     value % 10 == 1 -> "$value минуту".format(value)
@@ -91,7 +91,7 @@ enum class TimeUnits {
                     else -> "$value минут".format(value)
                 }
             }
-            TimeUnits.HOUR== this -> {
+            HOUR== this -> {
                 when{
                     value % 100 in 11..19 -> "$value часов".format(value)
                     value % 10 == 1 -> "$value час".format(value)
@@ -99,7 +99,7 @@ enum class TimeUnits {
                     else -> "$value часов".format(value)
                 }
             }
-            TimeUnits.DAY == this -> {
+            DAY == this -> {
                 when{
                     value % 100 in 11..19 -> "$value дней".format(value)
                     value % 10 == 1 -> "$value день".format(value)
