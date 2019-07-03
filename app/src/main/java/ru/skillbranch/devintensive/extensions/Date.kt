@@ -35,68 +35,24 @@ fun Date.humanizeDiff(date: Date = Date()): String {
     differenceSeconds = abs(differenceSeconds)
 
     if(isFuture){
-        when{
-            differenceSeconds < 60  -> return getQuantityText(
-                number = differenceSeconds,
-                oneFormat = "через %d секунду",
-                fewFormat = "через %d секунды",
-                manyFormat = "через %d секунд"
-            )
-            toMinutes(differenceSeconds) < 60  -> return getQuantityText(
-                number =  toMinutes(differenceSeconds),
-                oneFormat = "через %d минуту",
-                fewFormat = "через %d минуты",
-                manyFormat = "через %d минут"
-            )
-            toHours(differenceSeconds) < 24  -> return getQuantityText(
-                number = toHours(differenceSeconds),
-                oneFormat = "через %d час",
-                fewFormat = "через %d часа",
-                manyFormat = "через %d часов"
-            )
-            else ->
-                return getQuantityText(
-                    number = toDays(differenceSeconds),
-                    oneFormat = "через %d день",
-                    fewFormat = "через %d дня",
-                    manyFormat = "через %d дней")
+        return when{
+            differenceSeconds < 60  -> "через " + TimeUnits.SECOND.plural(differenceSeconds)
+            toMinutes(differenceSeconds) < 60  -> "через " + TimeUnits.MINUTE.plural(toMinutes(differenceSeconds))
+            toHours(differenceSeconds) < 24  -> "через " + TimeUnits.HOUR.plural(toHours(differenceSeconds))
+            else -> "через " + TimeUnits.DAY.plural(toDays(differenceSeconds))
         }
     }
     else{
-        when{
-            differenceSeconds == 0 || differenceSeconds == 1 -> {
-                return "только что"
-            }
-            differenceSeconds in 1..45 -> return "несколько секунд назад"
-
-            differenceSeconds in 45..75 -> return "минуту назад"
-
-            toMinutes(differenceSeconds) < 45  -> return getQuantityText(
-                number =  toMinutes(differenceSeconds),
-                oneFormat = "%d минуту назад",
-                fewFormat = "%d минуты назад",
-                manyFormat = "%d минут назад"
-            )
-
-            toMinutes(differenceSeconds) in 45..75 -> return "час назад"
-
-            toHours(differenceSeconds) < 22  -> return getQuantityText(
-                number = toHours(differenceSeconds),
-                oneFormat = "%d час назад",
-                fewFormat = "%d часа назад",
-                manyFormat = "%d часов назад"
-            )
-
-            toHours(differenceSeconds) in 22..26 -> return "день назад"
-            toHours(differenceSeconds) > 26 && toDays(differenceSeconds) < 360 -> return getQuantityText(
-                number = toDays(differenceSeconds),
-                oneFormat = "%d день назад",
-                fewFormat = "%d дня назад",
-                manyFormat = "%d дней назад")
-
-            else ->
-                return "более года назад"
-        }
+        return when{
+            differenceSeconds == 0 || differenceSeconds == 1 -> { "только что" }
+            differenceSeconds in 1..45 -> "несколько секунд назад"
+            differenceSeconds in 45..75 -> "минуту назад"
+            toMinutes(differenceSeconds) < 45  -> TimeUnits.MINUTE.plural(toMinutes(differenceSeconds)) + " назад"
+            toMinutes(differenceSeconds) in 45..75 -> "час назад"
+            toHours(differenceSeconds) < 22  -> TimeUnits.HOUR.plural(toHours(differenceSeconds)) + " назад"
+            toHours(differenceSeconds) in 22..26 -> "день назад"
+            toHours(differenceSeconds) > 26 && toDays(differenceSeconds) < 360 -> TimeUnits.DAY.plural(toDays(differenceSeconds)) + " назад"
+            else -> "более года назад"}
     }
 }
 
@@ -104,14 +60,44 @@ private fun toDays(differenceSeconds: Int) = differenceSeconds / 86400
 private fun toHours(differenceSeconds: Int) = differenceSeconds / 3600
 private fun toMinutes(differenceSeconds: Int) = differenceSeconds / 60
 
-fun getQuantityText(number: Int, oneFormat: String, fewFormat: String, manyFormat: String):String {
+fun TimeUnits.plural(value:Int):String {
     return when{
-        number % 100 in 11..19 -> manyFormat.format(number)
-        number % 10 == 1 -> oneFormat.format(number)
-        number % 10 in 2..4 -> fewFormat.format(number)
-        else -> manyFormat.format(number)
+        TimeUnits.SECOND == this -> {
+            when{
+                value % 100 in 11..19 -> "$value секунд".format(value)
+                value % 10 == 1 -> "$value секунду".format(value)
+                value % 10 in 2..4 -> "$value секунды".format(value)
+                else -> "$value секунд".format(value)
+            }
+        }
+        TimeUnits.MINUTE == this -> {
+            when{
+                value % 100 in 11..19 -> "$value минут".format(value)
+                value % 10 == 1 -> "$value минуту".format(value)
+                value % 10 in 2..4 -> "$value минуты".format(value)
+                else -> "$value минут".format(value)
+            }
+        }
+        TimeUnits.HOUR== this -> {
+            when{
+                value % 100 in 11..19 -> "$value часов".format(value)
+                value % 10 == 1 -> "$value час".format(value)
+                value % 10 in 2..4 -> "$value часа".format(value)
+                else -> "$value часов".format(value)
+            }
+        }
+        TimeUnits.DAY == this -> {
+            when{
+                value % 100 in 11..19 -> "$value дней".format(value)
+                value % 10 == 1 -> "$value день".format(value)
+                value % 10 in 2..4 -> "$value дня".format(value)
+                else -> "$value дней".format(value)
+            }
+        }
+        else -> "not correct"
     }
 }
+
 
 enum class TimeUnits {
     SECOND,
