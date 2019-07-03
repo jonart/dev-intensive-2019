@@ -54,17 +54,27 @@ object Utils {
         for (x in 0 until payload.length) {
             if (payload[x] == ' ') {
                 word += divider
-            }
-            if (payload[x].isUpperCase()) {
-                if (payload[x].toLowerCase() in translationMap)
-                    word += translationMap[payload[x].toLowerCase()].toString().toUpperCase()
             } else {
-                if (payload[x] in translationMap)
-                    word += translationMap[payload[x]].toString()
+                if (payload[x].isUpperCase()) {
+                    if (payload[x].toLowerCase() in translationMap) {
+                        val letter = translationMap[payload[x].toLowerCase()].toString()
+                        if (letter.length > 1) {
+                            word = letter[0].toUpperCase().toString() + letter[1]
+                        } else {
+                            word += translationMap[payload[x].toLowerCase()].toString().toUpperCase()
+                        }
+                    } else {
+                        word += payload[x].toString()
+                    }
+                } else if (payload[x] in translationMap) word += translationMap[payload[x]].toString()
+                else {
+                    word += payload[x].toString()
+                }
             }
+
         }
 
-        return word
+        return word.replace("  ", " ")
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? {
