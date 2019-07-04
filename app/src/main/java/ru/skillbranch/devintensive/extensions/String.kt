@@ -9,5 +9,13 @@ fun String.truncate(size:Int = 16):String{
 }
 
 fun String.stripHtml():String{
-    return this.trim().replace("\\s+".toRegex()," ").replace("<(\"[^\"]*\"|'[^']*'|[^'\">])*>".toRegex(),"")
+    return this.trim().replace("\\s+".toRegex()," ")
+        .replace("<(\"[^\"]*\"|'[^']*'|[^'\">])*>"
+        .toRegex(),"")
+        .replace("|", "")
+        .replace("&amp;", "")
+        .replace("&lt;", "")
+        .replace("&gt;", "")
+        .replace("&#39;", "")
+        .replace("&quot;", "")
 }
