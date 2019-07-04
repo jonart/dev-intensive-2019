@@ -36,11 +36,15 @@ fun Date.humanizeDiff(date: Date = Date()): String {
 
     if(isFuture){
         return when{
-            differenceSeconds < 60  -> "через " + TimeUnits.SECOND.plural(differenceSeconds)
-            toMinutes(differenceSeconds) < 60  -> "через " + TimeUnits.MINUTE.plural(toMinutes(differenceSeconds))
-            toHours(differenceSeconds) < 24  -> "через " + TimeUnits.HOUR.plural(toHours(differenceSeconds))
-            else -> "через " + TimeUnits.DAY.plural(toDays(differenceSeconds))
-        }
+            differenceSeconds == 0 || differenceSeconds == 1 -> { "только что" }
+            differenceSeconds in 1..45 -> "через несколько секунд"
+            differenceSeconds in 45..75 -> "через минуту"
+            toMinutes(differenceSeconds) < 45  -> "через " + TimeUnits.MINUTE.plural(toMinutes(differenceSeconds))
+            toMinutes(differenceSeconds) in 45..75 -> "через час"
+            toHours(differenceSeconds) < 22  -> "через " + TimeUnits.HOUR.plural(toHours(differenceSeconds))
+            toHours(differenceSeconds) in 22..26 -> "через день"
+            toHours(differenceSeconds) > 26 && toDays(differenceSeconds) < 360 -> "через " + TimeUnits.DAY.plural(toDays(differenceSeconds))
+            else -> "более чем через год"}
     }
     else{
         return when{
@@ -60,48 +64,50 @@ private fun toDays(differenceSeconds: Int) = differenceSeconds / 86400
 private fun toHours(differenceSeconds: Int) = differenceSeconds / 3600
 private fun toMinutes(differenceSeconds: Int) = differenceSeconds / 60
 
-fun TimeUnits.plural(value:Int):String {
-    return when{
-        TimeUnits.SECOND == this -> {
-            when{
-                value % 100 in 11..19 -> "$value секунд".format(value)
-                value % 10 == 1 -> "$value секунду".format(value)
-                value % 10 in 2..4 -> "$value секунды".format(value)
-                else -> "$value секунд".format(value)
-            }
-        }
-        TimeUnits.MINUTE == this -> {
-            when{
-                value % 100 in 11..19 -> "$value минут".format(value)
-                value % 10 == 1 -> "$value минуту".format(value)
-                value % 10 in 2..4 -> "$value минуты".format(value)
-                else -> "$value минут".format(value)
-            }
-        }
-        TimeUnits.HOUR== this -> {
-            when{
-                value % 100 in 11..19 -> "$value часов".format(value)
-                value % 10 == 1 -> "$value час".format(value)
-                value % 10 in 2..4 -> "$value часа".format(value)
-                else -> "$value часов".format(value)
-            }
-        }
-        TimeUnits.DAY == this -> {
-            when{
-                value % 100 in 11..19 -> "$value дней".format(value)
-                value % 10 == 1 -> "$value день".format(value)
-                value % 10 in 2..4 -> "$value дня".format(value)
-                else -> "$value дней".format(value)
-            }
-        }
-        else -> "not correct"
-    }
-}
+
 
 
 enum class TimeUnits {
     SECOND,
     MINUTE,
     HOUR,
-    DAY
+    DAY;
+
+    fun plural(value:Int):String {
+        return when{
+            SECOND == this -> {
+                when{
+                    value % 100 in 11..19 -> "$value секунд".format(value)
+                    value % 10 == 1 -> "$value секунду".format(value)
+                    value % 10 in 2..4 -> "$value секунды".format(value)
+                    else -> "$value секунд".format(value)
+                }
+            }
+            MINUTE == this -> {
+                when{
+                    value % 100 in 11..19 -> "$value минут".format(value)
+                    value % 10 == 1 -> "$value минуту".format(value)
+                    value % 10 in 2..4 -> "$value минуты".format(value)
+                    else -> "$value минут".format(value)
+                }
+            }
+            HOUR== this -> {
+                when{
+                    value % 100 in 11..19 -> "$value часов".format(value)
+                    value % 10 == 1 -> "$value час".format(value)
+                    value % 10 in 2..4 -> "$value часа".format(value)
+                    else -> "$value часов".format(value)
+                }
+            }
+            DAY == this -> {
+                when{
+                    value % 100 in 11..19 -> "$value дней".format(value)
+                    value % 10 == 1 -> "$value день".format(value)
+                    value % 10 in 2..4 -> "$value дня".format(value)
+                    else -> "$value дней".format(value)
+                }
+            }
+            else -> "not correct"
+        }
+    }
 }
