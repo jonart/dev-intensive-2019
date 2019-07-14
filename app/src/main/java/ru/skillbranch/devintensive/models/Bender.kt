@@ -57,28 +57,28 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         }
     }
 
-    enum class Question(val question: String, val answer: List<String>) {
+    enum class Question(val question: String, val answer: List<String>){
         NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
             override fun checkAnswer(answer: String): Boolean = answer.trim().firstOrNull()?.isUpperCase() ?: false
         },
-        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
+        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")){
             override fun nextQuestion(): Question = MATERIAL
             override fun checkAnswer(answer: String): Boolean = answer.trim().firstOrNull()?.isLowerCase() ?: false
         },
-        MATERIAL("Из чего я сделан?", listOf("метал", "дерево", "metal", "iron", "wood")) {
+        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "iron", "wood", "metal")){
             override fun nextQuestion(): Question = BDAY
-            override fun checkAnswer(answer: String): Boolean = answer.trim().contains("\\d".toRegex()).not()
+            override fun checkAnswer(answer: String): Boolean = answer.trim().contains(Regex("\\d")).not()
         },
-        BDAY("Когда меня создали?", listOf("2993")) {
+        BDAY("Когда меня создали?", listOf("2993")){
             override fun nextQuestion(): Question = SERIAL
-            override fun checkAnswer(answer: String): Boolean = answer.trim().contains("^[0-9]*$".toRegex())
+            override fun checkAnswer(answer: String): Boolean = answer.trim().contains(Regex("^[0-9]*$"))
         },
-        SERIAL("Мой серийный номер?", listOf("2716057")) {
+        SERIAL("Мой серийный номер?", listOf("2716057")){
             override fun nextQuestion(): Question = IDLE
-            override fun checkAnswer(answer: String): Boolean = answer.trim().contains("[0-9]{7}$".toRegex())
+            override fun checkAnswer(answer: String): Boolean = answer.trim().contains(Regex("^[0-9]{7}$"))
         },
-        IDLE("На этом все, вопросов больше нет", listOf()) {
+        IDLE("На этом все, вопросов больше нет", listOf()){
             override fun nextQuestion(): Question = IDLE
             override fun checkAnswer(answer: String): Boolean = true
         };
