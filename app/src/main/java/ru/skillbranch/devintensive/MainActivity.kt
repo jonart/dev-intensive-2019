@@ -3,19 +3,16 @@ package ru.skillbranch.devintensive
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.text.InputType
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.skillbranch.devintensive.extensions.hideKeyboard
 import ru.skillbranch.devintensive.models.Bender
 import ru.skillbranch.devintensive.models.Bender.Question
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity() {
 
     lateinit var benderImage: ImageView
     lateinit var textTxt: TextView
@@ -33,36 +30,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         messageEt = et_message
         sendBtn = iv_send
 
-        makeSendOnActionDone(messageEt)
+        messageEt.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) sendBtn.performClick()
+            false
+        }
         val status = savedInstanceState?.getString("STATUS") ?: Bender.Status.NORMAL.name
         val question = savedInstanceState?.getString("QUESTION") ?: Bender.Question.NAME.name
         benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
 
-
         val (r,g,b) = benderObj.status.color
         benderImage.setColorFilter(Color.rgb(r,g,b),PorterDuff.Mode.MULTIPLY)
 
-
         textTxt.text = benderObj.askQuestion()
-        sendBtn.setOnClickListener(this)
-    }
-
-    private fun makeSendOnActionDone(editText: EditText) {
-        editText.setRawInputType(InputType.TYPE_CLASS_TEXT)
-        editText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) sendBtn.performClick()
-            false
+        sendBtn.setOnClickListener{
+                if (benderObj.question.checkAnswer(messageEt.text.toString()))
+                    sendAnswer()
+                else errorMessage()
         }
     }
 
-    override fun onClick(v: View?) {
-        if (v?.id == R.id.iv_send)
-            if (isAnswerCorrect())
-                sendAnswer()
-            else showErrorMessage()
-    }
-
-    private fun showErrorMessage(){
+    private fun errorMessage(){
         val errorMessage = when(benderObj.question){
             Question.NAME -> "Имя должно начинаться с заглавной буквы"
             Question.PROFESSION -> "Профессия должна начинаться со строчной буквы"
@@ -73,10 +60,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         textTxt.text = errorMessage + "\n" + benderObj.question.question
         messageEt.setText("")
-    }
-
-    private fun isAnswerCorrect():Boolean{
-        return benderObj.question.checkAnswer(messageEt.text.toString())
     }
 
     private fun sendAnswer() {

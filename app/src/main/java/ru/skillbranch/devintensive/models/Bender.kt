@@ -15,7 +15,10 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
         return when(question){
             Question.IDLE -> question.question to status.color
-            else -> "${checkAnswer(answer)}\n${question.question}" to status.color
+            else -> {
+                val isCorrect = checkAnswer(answer)
+                "$isCorrect\n${question.question}" to status.color
+            }
         }
 
     }
@@ -24,22 +27,16 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         return if (question.answer.contains(answer)){
             question = question.nextQuestion()
             "Отлично - ты справился"
-        }
-        else {
+        } else {
             if (status == Status.CRITICAL){
-                resetStates()
+                status = Status.NORMAL
+                question = Question.NAME
                 "Это неправильный ответ. Давай все по новой"
-            }
-            else{
+            } else{
                 status = status.nextStatus()
                 "Это неправильный ответ"
             }
         }
-    }
-
-    private fun resetStates() {
-        status = Status.NORMAL
-        question = Question.NAME
     }
 
     enum class Status(val color: Triple<Int, Int, Int>) {
@@ -60,11 +57,11 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     enum class Question(val question: String, val answer: List<String>){
         NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
-            override fun checkAnswer(answer: String): Boolean = answer.trim().firstOrNull()?.isUpperCase() ?: false
+            override fun checkAnswer(answer: String): Boolean = answer.trim()[0].isUpperCase()
         },
         PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")){
             override fun nextQuestion(): Question = MATERIAL
-            override fun checkAnswer(answer: String): Boolean = answer.trim().firstOrNull()?.isLowerCase() ?: false
+            override fun checkAnswer(answer: String): Boolean = answer.trim()[0].isLowerCase()
         },
         MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "iron", "wood", "metal")){
             override fun nextQuestion(): Question = BDAY
