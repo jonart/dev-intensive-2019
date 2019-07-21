@@ -26,14 +26,10 @@ fun Activity.isKeyboardOpen(): Boolean {
     return heightDiff > marginOfError
 }
 
-fun Context.convertDpToPx(dp: Float): Float {
-    return TypedValue.applyDimension(
+fun Context.convertDpToPx(dp: Float): Float = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
         this.resources.displayMetrics
     )
-}
 
-fun Activity.isKeyboardClosed():Boolean{
-    return this.isKeyboardOpen().not()
-}
+fun Activity.isKeyboardClosed():Boolean = this.isKeyboardOpen().not()

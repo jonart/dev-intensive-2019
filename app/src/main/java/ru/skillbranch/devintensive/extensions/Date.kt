@@ -34,9 +34,9 @@ fun Date.humanizeDiff(date: Date = Date()): String {
     isFuture = differenceSeconds < 0
     differenceSeconds = abs(differenceSeconds)
 
-    if(isFuture){
-        return when{
-            differenceSeconds == 0 || differenceSeconds == 1 -> { "только что" }
+    return if(isFuture){
+         when{
+            differenceSeconds in 0..1 -> { "только что" }
             differenceSeconds in 1..45 -> "через несколько секунд"
             differenceSeconds in 45..75 -> "через минуту"
             toMinutes(differenceSeconds) < 45  -> "через " + TimeUnits.MINUTE.plural(toMinutes(differenceSeconds))
@@ -45,10 +45,9 @@ fun Date.humanizeDiff(date: Date = Date()): String {
             toHours(differenceSeconds) in 22..26 -> "через день"
             toHours(differenceSeconds) > 26 && toDays(differenceSeconds) < 360 -> "через " + TimeUnits.DAY.plural(toDays(differenceSeconds))
             else -> "более чем через год"}
-    }
-    else{
-        return when{
-            differenceSeconds == 0 || differenceSeconds == 1 -> { "только что" }
+    } else{
+        when{
+            differenceSeconds in 0..1 -> { "только что" }
             differenceSeconds in 1..45 -> "несколько секунд назад"
             differenceSeconds in 45..75 -> "минуту назад"
             toMinutes(differenceSeconds) < 45  -> TimeUnits.MINUTE.plural(toMinutes(differenceSeconds)) + " назад"

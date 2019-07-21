@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         }
         val status = savedInstanceState?.getString("STATUS") ?: Bender.Status.NORMAL.name
         val question = savedInstanceState?.getString("QUESTION") ?: Bender.Question.NAME.name
-        benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
+        benderObj = Bender(Bender.Status.valueOf(status), Question.valueOf(question))
 
         val (r,g,b) = benderObj.status.color
         benderImage.setColorFilter(Color.rgb(r,g,b),PorterDuff.Mode.MULTIPLY)

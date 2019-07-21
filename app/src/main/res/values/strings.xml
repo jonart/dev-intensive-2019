@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Chat Dev-intensive</string>я
+    <string name="app_name">Chat Dev-intensive</string>
+    <string name="hint_enter_text">Введите текст</string>
+    <string name="hello_text">Hello World!</string>
 </resources>

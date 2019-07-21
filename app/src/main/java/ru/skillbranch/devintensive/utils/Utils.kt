@@ -73,7 +73,6 @@ object Utils {
             }
 
         }
-
         return word.replace("  ", " ")
     }
 

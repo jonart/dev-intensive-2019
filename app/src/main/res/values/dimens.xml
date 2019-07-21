@@ -15,4 +15,6 @@
 
 
     <dimen name="image_button_size_24">24dp</dimen>
+
+    <dimen name="size_100dp">100dp</dimen>
 </resources>
