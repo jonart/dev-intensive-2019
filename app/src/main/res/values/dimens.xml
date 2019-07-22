@@ -3,6 +3,7 @@
 
     <!-- font size -->
     <dimen name="font_large_24">24sp</dimen>
+    <dimen name="font_large_20">20sp</dimen>
     <dimen name="font_normal_16">16sp</dimen>
     <dimen name="font_small_12">12sp</dimen>
 
