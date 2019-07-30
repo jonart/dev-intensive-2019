@@ -58,7 +58,6 @@ object PreferencesRepository {
             is Boolean -> putBoolean(key, value)
             is Long -> putLong(key, value)
             is Float -> putFloat(key, value)
-            is Int -> putInt(key, value)
             else -> error("Only primitives types can be stored in Shared Preferences")
         }
 
