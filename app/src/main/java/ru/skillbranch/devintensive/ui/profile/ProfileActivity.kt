@@ -4,6 +4,8 @@ import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
 class ProfileActivity : AppCompatActivity() {
@@ -36,12 +39,17 @@ class ProfileActivity : AppCompatActivity() {
         Log.d("M_ProfileActivity", "onCreate")
     }
 
+    private fun setAvatarImage() {
+        val initials = Utils.toInitials(et_first_name.text.toString(), et_last_name.text.toString())
+        iv_avatar.generateAvatar(initials, Utils.convertSpToPx(this, 48), theme)
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putBoolean(IS_EDIT_MODE, isEditMode)
     }
 
-    private fun initViewModel(){
+    private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         viewModel.getProfileData().observe(this, Observer { updateUI(it) })
         viewModel.getTheme().observe(this, Observer { updateTheme(it) })
@@ -54,10 +62,12 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun updateUI(profile: Profile) {
         profile.toMap().also {
-            for ((k,v) in viewFields){
+            for ((k, v) in viewFields) {
                 v.text = it[k].toString()
             }
         }
+
+        setAvatarImage()
     }
 
     private fun initViews(savedInstanceState: Bundle?) {
@@ -84,6 +94,22 @@ class ProfileActivity : AppCompatActivity() {
         btn_switch_theme.setOnClickListener {
             viewModel.switchTheme()
         }
+        et_repository.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString().isNotEmpty()) {
+                    wr_repository.error =
+                        if (!checkRepository(s.toString())) getString(R.string.validation_repo_error) else ""
+                } else {
+                    wr_repository.error = null
+                }
+            }
+        })
     }
 
     private fun showCurrentMode(isEdit: Boolean) {
@@ -120,14 +146,33 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveProfileInfo(){
+    private fun saveProfileInfo() {
         Profile(
             firstName = et_first_name.text.toString(),
             lastName = et_last_name.text.toString(),
             about = et_about.text.toString(),
-            repository = et_repository.text.toString()
+            repository = if (!checkRepository(et_repository.text.toString())) "" else et_repository.text.toString()
         ).apply {
             viewModel.saveProfileData(this)
         }
+    }
+
+    private fun checkRepository(repoLink: String): Boolean {
+        val exceptionsWords = listOf(
+            "enterprise",
+            "features",
+            "topics",
+            "collections",
+            "trending",
+            "events",
+            "marketplace",
+            "pricing",
+            "nonprofit",
+            "customer-stories",
+            "security",
+            "login",
+            "join"
+        ).joinToString("|")
+        return repoLink.matches(Regex("""^(https://)?(www\.)?github\.com/(?!($exceptionsWords)/?$)[\-\w]+/?$"""))
     }
 }

@@ -1,5 +1,15 @@
 package ru.skillbranch.devintensive.utils
 
+import android.content.Context
+import android.graphics.*
+import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.graphics.drawable.Drawable
+import android.text.TextPaint
+import android.util.TypedValue
+import androidx.core.graphics.drawable.toDrawable
+import ru.skillbranch.devintensive.R
+import java.lang.Math.round
+
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
         return if (fullName.isNullOrBlank()) {
@@ -86,5 +96,21 @@ object Utils {
             name == "" || surname == "" -> null
             else -> null
         }
+    }
+
+    fun convertDpToPx(context: Context, dp: Int): Int {
+        val scale = context.resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
+
+    fun convertPxToDp(context: Context, px: Int): Int {
+        val scale = context.resources.displayMetrics.density
+        return (px / scale + 0.5f).toInt()
+    }
+
+
+    fun convertSpToPx(context: Context, sp: Int): Int {
+        return sp * context.resources.displayMetrics.scaledDensity.toInt()
     }
 }
