@@ -16,7 +16,7 @@ import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.utils.Utils
 import kotlin.math.min
 
-class CircleImageView @JvmOverloads constructor (
+class AvatarImageView @JvmOverloads constructor (
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -32,9 +32,9 @@ class CircleImageView @JvmOverloads constructor (
 
     init {
         if (attrs != null) {
-            val attrVal = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView)
-            borderColor = attrVal.getColor(R.styleable.CircleImageView_cv_borderColor, DEFAULT_BORDER_COLOR)
-            borderWidth = attrVal.getDimensionPixelSize(R.styleable.CircleImageView_cv_borderWidth, borderWidth)
+            val attrVal = context.obtainStyledAttributes(attrs, R.styleable.AvatarImageView)
+            borderColor = attrVal.getColor(R.styleable.AvatarImageView_cv_borderColor, DEFAULT_BORDER_COLOR)
+            borderWidth = attrVal.getDimensionPixelSize(R.styleable.AvatarImageView_cv_borderWidth, borderWidth)
             attrVal.recycle()
         }
     }
@@ -86,6 +86,10 @@ class CircleImageView @JvmOverloads constructor (
             setImageBitmap(bitmap)
             invalidate()
         }
+    }
+
+    fun setInitials(text: String?){
+
     }
 
     private fun getInitials(text: String, sizeSp: Int, theme: Resources.Theme): Bitmap {

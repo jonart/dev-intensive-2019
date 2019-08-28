@@ -7,7 +7,8 @@
     <attr name="colorDivider" format="reference"/>
     <attr name="colorIcon" format="reference"/>
 
-    <declare-styleable name="CircleImageView">
+
+    <declare-styleable name="AvatarImageView">
         <attr name="cv_borderColor" format="color"/>
         <attr name="cv_borderWidth" format="dimension"/>
     </declare-styleable>
