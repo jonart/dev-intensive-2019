@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_chat_sigle.*
+import kotlinx.android.synthetic.main.item_chat_single.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.data.ChatItem
 
-class ChatAdapter : RecyclerView.Adapter<ChatAdapter.SingleViewHolder>() {
+class ChatAdapter(val listener: (ChatItem) -> Unit) : RecyclerView.Adapter<ChatAdapter.SingleViewHolder>() {
     var items: List<ChatItem> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val convertView = inflater.inflate(R.layout.item_chat_sigle, parent, false)
+        val convertView = inflater.inflate(R.layout.item_chat_single, parent, false)
         Log.d("M_ChatAdapter", "onCreateViewHolder")
         return SingleViewHolder(convertView)
     }
@@ -24,10 +24,12 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.SingleViewHolder>() {
 
     override fun onBindViewHolder(holder: SingleViewHolder, position: Int) {
         Log.d("M_ChatAdapter", "onBindViewHolder")
-        holder.bind(items[position])
+        holder.bind(items[position], listener)
     }
 
     fun updateData(data: List<ChatItem>) {
+        
+
         items = data
         notifyDataSetChanged()
     }
@@ -38,7 +40,7 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.SingleViewHolder>() {
         override val containerView: View?
             get() = itemView
 
-        fun bind(item: ChatItem) {
+        fun bind(item: ChatItem, listener: (ChatItem) -> Unit) {
             if (item.avatar == null) {
                 iv_avatar_single.setInitials(item.initials)
             } else {
@@ -57,6 +59,8 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.SingleViewHolder>() {
             }
 
             tv_title_single.text = item.shortDescription
+            tv_message_single.text = item.shortDescription
+            itemView.setOnClickListener { listener.invoke(item) }
         }
     }
 }

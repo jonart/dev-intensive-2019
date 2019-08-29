@@ -1,4 +1,4 @@
-package ru.skillbranch.devintensive.models
+package ru.skillbranch.devintensive.models.data
 
 
 import ru.skillbranch.devintensive.utils.Utils
@@ -65,7 +65,16 @@ class Builder{
     fun respect(respect:Int = 0) = apply { this.respect = respect }
     fun lastVisit(lastVisit:Date? = Date()) = apply { this.lastVisit = lastVisit }
     fun isOnline(isOnline:Boolean = false) = apply { this.isOnline = isOnline }
-    fun build() = User(id = id, firstName = firstName, lastName = lastName,avatar = avatar,rating = rating,respect = respect,lastVisit = lastVisit,isOnline = isOnline)
+    fun build() = User(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        avatar = avatar,
+        rating = rating,
+        respect = respect,
+        lastVisit = lastVisit,
+        isOnline = isOnline
+    )
 }
     companion object Factory {
         var lastId = -1
@@ -73,7 +82,11 @@ class Builder{
             lastId++
 
             val (firstName, lastName) = Utils.parseFullName(fullName)
-            return User(id = "$lastId", firstName = firstName, lastName = lastName)
+            return User(
+                id = "$lastId",
+                firstName = firstName,
+                lastName = lastName
+            )
         }
     }
 }
