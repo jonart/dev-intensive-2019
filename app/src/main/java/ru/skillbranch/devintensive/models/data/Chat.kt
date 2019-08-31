@@ -21,14 +21,19 @@ data class Chat(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun lastMessageDate(): Date? {
+        //TODO implement me
         return Date()
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun lastMessageShort(): Pair<String?, String?> =
-        when (val lastMessage = messages.lastOrNull()) {
-            //TODO implement me
-            else -> Pair("Сообщений ещё нет","")
+//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+//    fun lastMessageShort(): Pair<String?, String?> =
+//        when (val lastMessage = messages.lastOrNull()) {
+//            //TODO implement me
+//            else -> Pair("Сообщений ещё нет","")
+//        }
+
+    fun lastMessageShort(): Pair<String?, String?>{
+        return "Сообщений ещё нет" to "@John_Doe"
         }
 
 

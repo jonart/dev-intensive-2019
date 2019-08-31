@@ -40,7 +40,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setAvatarImage() {
         val initials = Utils.toInitials(et_first_name.text.toString(), et_last_name.text.toString())
-        iv_avatar.generateAvatar(initials,10,theme)
+        iv_avatar.generateAvatar(initials, Utils.convertSpToPx(this, 48), theme)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
