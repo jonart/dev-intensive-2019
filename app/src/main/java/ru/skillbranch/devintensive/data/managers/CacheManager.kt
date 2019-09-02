@@ -1,5 +1,6 @@
 package ru.skillbranch.devintensive.data.managers
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.skillbranch.devintensive.extensions.mutableLiveData
 import ru.skillbranch.devintensive.models.data.Chat
@@ -11,6 +12,7 @@ object CacheManager {
     private val users = mutableLiveData(DataGenerator.stabUsers)
 
     fun loadChats(): MutableLiveData<List<Chat>> {
+        Log.d("M_CacheManager: ", "CHATS SIZE ${chats.value?.size}")
         return chats
     }
 
