@@ -9,11 +9,14 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.data.ChatItem
+import ru.skillbranch.devintensive.utils.Utils
 
 class ChatItemTouchHelperCallback(
-    val adapter: ChatAdapter,
-    val swipeListener: (ChatItem) -> Unit
+    private val isArchive: Boolean = false,
+    private val adapter: ChatAdapter,
+    private val swipeListener: (ChatItem) -> Unit
 ) : ItemTouchHelper.Callback() {
+
     private val bgRect = RectF()
     private val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val iconBounds = Rect()
@@ -41,18 +44,18 @@ class ChatItemTouchHelperCallback(
         swipeListener.invoke(adapter.items[viewHolder.adapterPosition])
     }
 
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder is ItemTouchViewHolder){
-            viewHolder.onItemSelected()
-        }
-        super.onSelectedChanged(viewHolder, actionState)
-    }
-
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-        if (viewHolder is ItemTouchViewHolder){
+        if (viewHolder is ItemTouchViewHolder) {
             viewHolder.onItemCleared()
         }
         super.clearView(recyclerView, viewHolder)
+    }
+
+    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE && viewHolder is ItemTouchViewHolder) {
+            viewHolder.onItemSelected()
+        }
+        super.onSelectedChanged(viewHolder, actionState)
     }
 
     override fun onChildDraw(
@@ -64,7 +67,7 @@ class ChatItemTouchHelperCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             val itemView = viewHolder.itemView
             drawBackground(canvas, itemView, dX)
             drawIcon(canvas, itemView, dX)
@@ -73,33 +76,38 @@ class ChatItemTouchHelperCallback(
     }
 
     private fun drawIcon(canvas: Canvas, itemView: View, dX: Float) {
-        val icon = itemView.resources.getDrawable(R.drawable.ic_archive_black_24dp,itemView.context.theme)
+        val iconId =
+            if (isArchive) R.drawable.ic_unarchive_black_24dp else R.drawable.ic_archive_black_24dp
+        val icon = itemView.resources.getDrawable(
+            iconId,
+            itemView.context.theme
+        )
         val iconSize = itemView.resources.getDimensionPixelSize(R.dimen.icon_size)
         val space = itemView.resources.getDimensionPixelSize(R.dimen.spacing_normal_16)
 
         val margin = (itemView.bottom - itemView.top - iconSize) / 2
-        with(iconBounds){
+
+        with(iconBounds) {
             left = itemView.right + dX.toInt() + space
             top = itemView.top + margin
             right = itemView.right + dX.toInt() + iconSize + space
             bottom = itemView.bottom - margin
         }
+
         icon.bounds = iconBounds
         icon.draw(canvas)
     }
 
     private fun drawBackground(canvas: Canvas, itemView: View, dX: Float) {
-        with(bgRect){
-            left = itemView.left.toFloat()
+        with(bgRect) {
+            left = itemView.right.toFloat() + dX
             top = itemView.top.toFloat()
             right = itemView.right.toFloat()
             bottom = itemView.bottom.toFloat()
         }
-
-        with(bgPaint){
-            color = itemView.resources.getColor(R.color.color_primary_dark,itemView.context.theme)
+        with(bgPaint) {
+            color = Utils.getColor(itemView.context, R.attr.colorSwipeBg)
         }
-
         canvas.drawRect(bgRect, bgPaint)
     }
 }
@@ -107,4 +115,5 @@ class ChatItemTouchHelperCallback(
 interface ItemTouchViewHolder {
     fun onItemSelected()
     fun onItemCleared()
+
 }

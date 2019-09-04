@@ -6,7 +6,6 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
@@ -24,39 +23,28 @@ import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 class ProfileActivity : AppCompatActivity() {
 
     companion object {
-        const val IS_EDIT_MODE = "IS_EDIT_MODE"
+        private const val IS_EDIT_MODE = "IS_EDIT_MODE"
     }
 
     private lateinit var viewModel: ProfileViewModel
-    var isEditMode = false
+    private var isEditMode = false
     private var initialsDrawable = InitialsDrawable()
-    lateinit var viewFields: Map<String, TextView>
+    private lateinit var viewFields: Map<String, TextView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         initViews(savedInstanceState)
         initViewModel()
         viewModel.getProfileData().value.also {
-            drawInitials(it?.firstName,it?.lastName)
+            drawInitials(it?.firstName, it?.lastName)
         }
     }
 
-    private fun drawInitials(f: String?, l: String?) {
-        val i = Utils.toInitials(f, l)
-        if (i == null) {
-            iv_avatar.setImageResource(R.drawable.avatar_default)
-            return
-        }
-        initialsDrawable.setText(i)
-        iv_avatar.setImageDrawable(initialsDrawable)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState?.putBoolean(IS_EDIT_MODE, isEditMode)
+        outState.putBoolean(IS_EDIT_MODE, isEditMode)
     }
 
     private fun initViewModel() {
@@ -79,7 +67,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun updateUI(profile: Profile) {
         profile.toMap().also {
             for ((k, v) in viewFields) {
-                v.text = it[k].toString()
+                v.text = it[k]
             }
         }
         drawInitials(profile.firstName, profile.lastName)
@@ -102,29 +90,26 @@ class ProfileActivity : AppCompatActivity() {
 
         btn_edit.setOnClickListener {
             if (isEditMode) saveProfileInfo()
-            isEditMode = !isEditMode
+            isEditMode = isEditMode.not()
             showCurrentMode(isEditMode)
         }
 
         btn_switch_theme.setOnClickListener {
             viewModel.switchTheme()
         }
-        et_repository.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
+
+        (et_repository as EditText).addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString().isNotEmpty()) {
-                    wr_repository.error =
-                        if (!checkRepository(s.toString())) getString(R.string.validation_repo_error) else ""
-                } else {
-                    wr_repository.error = null
-                }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                validateRepo()
             }
-        })
+        }
+        )
     }
 
     private fun showCurrentMode(isEdit: Boolean) {
@@ -141,53 +126,60 @@ class ProfileActivity : AppCompatActivity() {
         wr_about.isCounterEnabled = isEdit
 
         with(btn_edit) {
+            val color = TypedValue()
+            theme.resolveAttribute(R.attr.colorAccent, color, true)
             val filter: ColorFilter? = if (isEdit) {
                 PorterDuffColorFilter(
-                    resources.getColor(R.color.color_accent, theme),
+                    color.data,
                     PorterDuff.Mode.SRC_IN
                 )
             } else {
                 null
             }
-
             val icon = if (isEdit) {
                 resources.getDrawable(R.drawable.ic_save_black_24dp, theme)
             } else {
                 resources.getDrawable(R.drawable.ic_edit_black_24dp, theme)
             }
-
             background.colorFilter = filter
             setImageDrawable(icon)
         }
     }
 
     private fun saveProfileInfo() {
+        if (!validateRepo()) {
+            et_repository.text.clear()
+        }
         Profile(
             firstName = et_first_name.text.toString(),
             lastName = et_last_name.text.toString(),
             about = et_about.text.toString(),
-            repository = if (!checkRepository(et_repository.text.toString())) "" else et_repository.text.toString()
+            repository = et_repository.text.toString()
         ).apply {
             viewModel.saveProfileData(this)
         }
     }
 
-    private fun checkRepository(repoLink: String): Boolean {
-        val exceptionsWords = listOf(
-            "enterprise",
-            "features",
-            "topics",
-            "collections",
-            "trending",
-            "events",
-            "marketplace",
-            "pricing",
-            "nonprofit",
-            "customer-stories",
-            "security",
-            "login",
-            "join"
-        ).joinToString("|")
-        return repoLink.matches(Regex("""^(https://)?(www\.)?github\.com/(?!($exceptionsWords)/?$)[\-\w]+/?$"""))
+    private fun drawInitials(f: String?, l: String?) {
+        val i = Utils.toInitials(f, l)
+        if (i == null) {
+            iv_avatar.setImageResource(R.drawable.avatar_default)
+            return
+        }
+        initialsDrawable.setText(i)
+        iv_avatar.setImageDrawable(initialsDrawable)
     }
+
+    private fun validateRepo(): Boolean {
+        return if (!Utils.isValidRepo(et_repository.text.toString())) {
+            wr_repository.error = "Невалидный адрес репозитория"
+            wr_repository.isErrorEnabled = true
+            false
+        } else {
+            wr_repository.isErrorEnabled = false
+            wr_repository.error = null
+            true
+        }
+    }
+
 }

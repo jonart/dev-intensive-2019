@@ -11,7 +11,7 @@ class App : Application() {
         private var instance: App? = null
 
         fun applicationContext(): Context {
-            return instance?.applicationContext!!
+            return instance!!.applicationContext
         }
     }
 
@@ -20,10 +20,9 @@ class App : Application() {
     }
 
     override fun onCreate() {
-        super.onCreate()
         PreferencesRepository.getAppTheme().also {
             AppCompatDelegate.setDefaultNightMode(it)
         }
-        //TODO call once when application created
+        super.onCreate()
     }
 }

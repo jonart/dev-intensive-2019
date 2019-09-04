@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import androidx.core.graphics.toRectF
-import kotlinx.android.synthetic.main.activity_profile.*
-import ru.skillbranch.devintensive.utils.Utils
 
 class AvatarImageView @JvmOverloads constructor(
     context: Context,

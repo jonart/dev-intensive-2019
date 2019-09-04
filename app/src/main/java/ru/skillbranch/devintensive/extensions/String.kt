@@ -1,21 +1,20 @@
 package ru.skillbranch.devintensive.extensions
 
-fun String.truncate(size:Int = 16):String{
-    return if(this.trim().length > size){
-        this.substring(0,size).trim() + "..."
-    } else{
-        this.trim()
+fun String.truncate(n: Int = 16): String? {
+    if (this.trimEnd().length <= n) {
+        return this.trimEnd()
     }
+    if (n < 4) {
+        return this.substring(0, 2)
+    }
+//    return this.trim().substring(0..kotlin.math.min(this.trim().length - 4, n - 4)).trim() + "..."
+    return this.trimEnd().substring(0 until n).trimEnd() + "..."
 }
 
-fun String.stripHtml():String{
-    return this.trim().replace("\\s+".toRegex()," ")
-        .replace("<(\"[^\"]*\"|'[^']*'|[^'\">])*>"
-        .toRegex(),"")
-        .replace("|", "")
-        .replace("&amp;", "")
-        .replace("&lt;", "")
-        .replace("&gt;", "")
-        .replace("&#39;", "")
-        .replace("&quot;", "")
+fun String.stripHtml(): String {
+    return this
+        .replace(Regex("<.*?>"), " ")
+        .replace(Regex("&.*?;"), "")
+        .replace(Regex("\\s+"), " ")
+        .trim()
 }

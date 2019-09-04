@@ -1,116 +1,183 @@
 package ru.skillbranch.devintensive.utils
 
 import android.content.Context
-import android.graphics.*
-import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.text.TextPaint
+import android.util.Log
 import android.util.TypedValue
-import androidx.core.graphics.drawable.toDrawable
-import ru.skillbranch.devintensive.R
-import java.lang.Math.round
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import kotlin.math.min
+
 
 object Utils {
-    fun parseFullName(fullName: String?): Pair<String?, String?> {
-        return if (fullName.isNullOrBlank()) {
-            null to null
-        } else {
-            val parts: List<String>? = fullName.trim().split(" ")
 
-            val firstName = parts?.getOrNull(0)
-            val lastName = parts?.getOrNull(1)
-            firstName to lastName
+    fun parseFullName(fullName: String?): Pair<String?, String?> {
+        val parts: List<String>? = fullName?.trim()?.split("\\s+".toRegex())
+
+        var firstName = parts?.getOrNull(0)
+        var lastName = parts?.getOrNull(1)
+        if (firstName.isNullOrEmpty()) {
+            firstName = null
         }
+        if (lastName.isNullOrEmpty()) {
+            lastName = null
+        }
+
+        return firstName to lastName
     }
 
-    fun transliteration(payload: String, divider: String = " "): String {
-        var word = ""
-        val translationMap = mapOf(
-            'а' to "a",
-            'b' to "б",
-            'в' to "v",
-            'г' to "g",
-            'д' to "d",
-            'е' to "e",
-            'ё' to "e",
-            'ж' to "zh",
-            'з' to "z",
-            'и' to "i",
-            'й' to "i",
-            'к' to "k",
-            'л' to "l",
-            'м' to "m",
-            'н' to "n",
-            'о' to "o",
-            'п' to "p",
-            'р' to "r",
-            'с' to "s",
-            'т' to "t",
-            'у' to "u",
-            'ф' to "f",
-            'х' to "h",
-            'ц' to "c",
-            'ч' to "ch",
-            'ш' to "sh",
-            'щ' to "sh",
-            'ъ' to "",
-            'ы' to "i",
-            'ь' to "",
-            'э' to "e",
-            'ю' to "yu",
-            'я' to "ya"
+    fun transliteration(payload: String, divider: String = "_"): String {
+        val from = arrayListOf(
+            ' ',
+            'а',
+            'б',
+            'в',
+            'г',
+            'д',
+            'е',
+            'ё',
+            'ж',
+            'з',
+            'и',
+            'й',
+            'к',
+            'л',
+            'м',
+            'н',
+            'о',
+            'п',
+            'р',
+            'с',
+            'т',
+            'у',
+            'ф',
+            'х',
+            'ц',
+            'ч',
+            'ш',
+            'щ',
+            'ъ',
+            'ы',
+            'ь',
+            'э',
+            'ю',
+            'я'
         )
-
-        for (x in 0 until payload.length) {
-            if (payload[x] == ' ') {
-                word += divider
-            } else {
-                if (payload[x].isUpperCase()) {
-                    if (payload[x].toLowerCase() in translationMap) {
-                        val letter = translationMap[payload[x].toLowerCase()].toString()
-                        if (letter.length > 1) {
-                            word = letter[0].toUpperCase().toString() + letter[1]
-                        } else {
-                            word += translationMap[payload[x].toLowerCase()].toString().toUpperCase()
-                        }
-                    } else {
-                        word += payload[x].toString()
-                    }
-                } else if (payload[x] in translationMap) word += translationMap[payload[x]].toString()
-                else {
-                    word += payload[x].toString()
+        val to = arrayListOf(
+            divider,
+            "a",
+            "b",
+            "v",
+            "g",
+            "d",
+            "e",
+            "e",
+            "zh",
+            "z",
+            "i",
+            "i",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "f",
+            "h",
+            "c",
+            "ch",
+            "sh",
+            "sh'",
+            "",
+            "i",
+            "",
+            "e",
+            "yu",
+            "ya"
+        )
+        val builder = StringBuilder()
+        for (currentChar in payload.trim()) {
+            var found = false
+            for (x in from.indices) {
+                if (currentChar == from[x]) {
+                    found = true
+                    builder.append(to[x])
+                    break
+                }
+                if (currentChar.toUpperCase() == from[x].toUpperCase()) {
+                    found = true
+                    builder.append(to[x].capitalize())
+                    break
                 }
             }
-
+            if (!found) {
+                builder.append(currentChar)
+            }
         }
-        return word.replace("  ", " ")
+        return builder.toString().replace(Regex("\\s+"), divider)
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? {
-        val name = firstName?.trim()
-        val surname = lastName?.trim()
-        return when {
-            !name.isNullOrEmpty() && !surname.isNullOrEmpty() -> name[0].toUpperCase().toString() + surname[0].toUpperCase().toString()
-            !name.isNullOrEmpty() && surname.isNullOrEmpty() -> name[0].toUpperCase().toString()
-            name.isNullOrEmpty() && !surname.isNullOrEmpty() -> surname[0].toUpperCase().toString()
-            name == "" || surname == "" -> null
-            else -> null
+        var res = ""
+        if (!firstName.isNullOrBlank()) {
+            res += firstName.trim()[0]
         }
+        if (!lastName.isNullOrBlank()) {
+            res += lastName.trim()[0]
+        }
+        return if (res.isBlank()) null else res.toUpperCase()
     }
 
-    fun convertDpToPx(context: Context, dp: Int): Int {
-        val scale = context.resources.displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
+    fun isValidRepo(value: String): Boolean =
+        value.matches(Regex("^(?:https://|https://www\\.|www\\.|^)github\\.com/(?!enterprise|features|topics|collections|trending|events|marketplace|pricing|nonprofit|customer-stories|security|login|join)[^/\\s\\n]+\$"))
+
+
+    fun isNightMode(ctx: Context): Boolean {
+        val currentNightMode =
+            ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
+        }
+
     }
 
-
-    fun convertPxToDp(context: Context, px: Int): Int {
-        val scale = context.resources.displayMetrics.density
-        return (px / scale + 0.5f).toInt()
+    fun getColor(ctx: Context, id: Int): Int {
+        val typedValue = TypedValue()
+        val a = ctx.obtainStyledAttributes(typedValue.data, intArrayOf(id))
+        val color = a.getColor(0, 0)
+        a.recycle()
+        return color
     }
 
+    fun roundDrawable(r: Resources, drawable: Drawable?): Drawable? {
+        if (drawable == null) {
+            return null
+        }
+        try {
+            val viewSize = min(drawable.bounds.width(), drawable.bounds.height())
+            val bitmap = Bitmap.createBitmap(
+                viewSize,
+                viewSize,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, viewSize, viewSize)
+            drawable.draw(canvas)
+            val roundBitmap = RoundedBitmapDrawableFactory.create(r, bitmap)
+            roundBitmap.isCircular = true
+            return roundBitmap
+        } catch (e: Exception) {
+            Log.e("M_Utils: ", "$e")
+            return null
+        }
 
-    fun convertSpToPx(context: Context, sp: Int): Int {
-        return sp * context.resources.displayMetrics.scaledDensity.toInt()
     }
 }

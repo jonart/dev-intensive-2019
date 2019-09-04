@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import ru.skillbranch.devintensive.R
 
-
 class AspectRatioImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -32,4 +31,3 @@ class AspectRatioImageView @JvmOverloads constructor(
         setMeasuredDimension(measuredWidth, newHeight)
     }
 }
-

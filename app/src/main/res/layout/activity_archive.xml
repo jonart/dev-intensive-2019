@@ -8,21 +8,13 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_chat_list"
+        android:id="@+id/rv_archive_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
         tools:listitem="@layout/item_chat_single">
 
     </androidx.recyclerview.widget.RecyclerView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/spacing_normal_16"
-        app:srcCompat="@drawable/ic_add_black_24dp" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -34,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?colorToolbarBg"
-            android:theme="@style/AppTheme.PopupOverlay"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:title="@string/archive_item_title"
             app:titleTextColor="@color/color_custom_white">
 
         </androidx.appcompat.widget.Toolbar>

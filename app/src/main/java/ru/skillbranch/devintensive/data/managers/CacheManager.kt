@@ -20,11 +20,11 @@ object CacheManager {
         return users.value!!.filter { ids.contains(it.id) }
     }
 
-    fun nextChatId():String{
+    fun nextChatId(): String {
         return "${chats.value!!.size}"
     }
 
-    fun insertChat(chat:Chat){
+    fun insertChat(chat: Chat) {
         val copy = chats.value!!.toMutableList()
         copy.add(chat)
         chats.value = copy
