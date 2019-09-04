@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.ui.custom.InitialsDrawable
 import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
@@ -27,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ProfileViewModel
     var isEditMode = false
+    private var initialsDrawable = InitialsDrawable()
     lateinit var viewFields: Map<String, TextView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +39,19 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
         initViews(savedInstanceState)
         initViewModel()
+        viewModel.getProfileData().value.also {
+            drawInitials(it?.firstName,it?.lastName)
+        }
     }
 
-    private fun setAvatarImage() {
-        val initials = Utils.toInitials(et_first_name.text.toString(), et_last_name.text.toString())
-        iv_avatar.generateAvatar(initials, Utils.convertSpToPx(this, 48), theme)
+    private fun drawInitials(f: String?, l: String?) {
+        val i = Utils.toInitials(f, l)
+        if (i == null) {
+            iv_avatar.setImageResource(R.drawable.avatar_default)
+            return
+        }
+        initialsDrawable.setText(i)
+        iv_avatar.setImageDrawable(initialsDrawable)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -56,6 +67,13 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun updateTheme(mode: Int) {
         delegate.setLocalNightMode(mode)
+        val color = TypedValue()
+        if (theme.resolveAttribute(R.attr.colorAccent, color, true)) {
+            initialsDrawable.setBgColor(color.data)
+        }
+        viewModel.getProfileData().value.also {
+            drawInitials(it?.firstName, it?.lastName)
+        }
     }
 
     private fun updateUI(profile: Profile) {
@@ -64,8 +82,7 @@ class ProfileActivity : AppCompatActivity() {
                 v.text = it[k].toString()
             }
         }
-
-        setAvatarImage()
+        drawInitials(profile.firstName, profile.lastName)
     }
 
     private fun initViews(savedInstanceState: Bundle?) {

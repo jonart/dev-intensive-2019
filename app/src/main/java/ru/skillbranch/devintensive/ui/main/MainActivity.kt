@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         chatAdapter = ChatAdapter{
             Snackbar.make(rv_chat_list, "Click on ${it.title}", Snackbar.LENGTH_LONG).show()
         }
+
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         val touchCallback = ChatItemTouchHelperCallback(chatAdapter){
             viewModel.addToArchive(it.id)
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         val touchHelper = ItemTouchHelper(touchCallback)
         touchHelper.attachToRecyclerView(rv_chat_list)
+
         with(rv_chat_list){
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
